@@ -1,14 +1,26 @@
 
 
 class CHANSON:
-    def __init__(self,isrc,titel,artist,time,im,suivant=None):
+    def __init__(self,isrc,title,artist,time,im,suivant=None):
         self.ISRC = isrc
-        self.titre = titel
+        self.titre = title
         self.artiste = artist
         self.duree = time
         self.img = im
         self.next = suivant
     
+class Noeud:
+    def __init__(self, song: CHANSON, visited: bool = False):
+        self.song = song
+        self.visited = visited
+class Graphe:
+    def __innit__(self, liste_sommets:list,mat ):
+        self.listeSommets = liste_sommets
+        self.mat = mat
+    def get_index_node(self, song=CHANSON):
+        pass
+        
+        
     
 class Playlist():
     def __init__(self):
