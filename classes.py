@@ -9,7 +9,7 @@ class CHANSON:
         self.img = im
         self.next = suivant
     
-class Noeud:
+class Node:
     def __init__(self, song: CHANSON, visited: bool = False):
         self.song = song
         self.visited = visited
