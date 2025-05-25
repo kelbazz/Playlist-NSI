@@ -9,5 +9,6 @@ if __name__ == "__main__":
     graph.add_node(2)
 
     graph.set_edge(1, 2)
+    graph.set_bi_edge(2, 3)
 
     pprint(graph.matrix)
