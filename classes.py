@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, Optional
+from typing import TypeVar, Generic, Optional, Any
 
 
 class Song:
@@ -148,18 +148,17 @@ class Playlist:
 
 
 class Pile:
-    def __init__(self):
+    def __init__(self) -> None:
         self.contenu = []
 
-    def est_vide(self):
+    def est_vide(self) -> bool:
         return len(self.contenu) == 0
 
-    def empiler(self, v):
+    def empiler(self, v) -> None:
         self.contenu.append(v)
 
-    def depiler(self):
+    def depiler(self) -> Any:
         if not self.est_vide():
             return self.contenu.pop()
-
         else:
             raise Exception("saisie incorrecte")
