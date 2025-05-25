@@ -19,20 +19,14 @@ class Graph:
         self.node_list = []
         self.matrix = []
 
-    def set_bi_edge(self, node_1: Node, node_2: Node, value: int = 1):
-        idx_1 = self.node_list.index(node_1)
-        idx_2 = self.node_list.index(node_2)
-
+    def set_bi_edge(self, idx_1: int, idx_2: int, value: int = 1):
         self.matrix[idx_1][idx_2] = value
         self.matrix[idx_2][idx_1] = value
 
-    def set_edge(self, node_1: Node, node_2: Node, value: int = 1):
-        idx_1 = self.node_list.index(node_1)
-        idx_2 = self.node_list.index(node_2)
-
+    def set_edge(self, idx_1: int, idx_2: int, value: int = 1):
         self.matrix[idx_1][idx_2] = value
 
-    def add_node(self, node):
+    def add_node(self, node) -> int:
         self.node_list.append(node)
 
         for i in range(len(self.matrix)):
@@ -40,8 +34,11 @@ class Graph:
 
         self.matrix.append([0] * len(self.node_list))
 
-    def get_index_node(self, song=CHANSON) -> int:
-        return self.liste_sommets.index(song)
+        # Returns the node's index
+        return len(self.node_list) - 1
+
+    def get_index_node(self, node) -> int:
+        return self.node_list.index(song)
 
 
 class Playlist:
