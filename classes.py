@@ -1,109 +1,153 @@
-class CHANSON:
-    def __init__(self, isrc, title, artist, time, im, suivant=None):
-        self.ISRC = isrc
-        self.titre = title
-        self.artiste = artist
-        self.duree = time
-        self.img = im
-        self.next = suivant
+from typing import TypeVar, Generic, Optional
+
+
+class Song:
+    def __init__(
+        self,
+        isrc: str,
+        title: str,
+        artist: str,
+        duration: str,
+        image: str,
+        following: Optional["Song"] = None,
+    ) -> None:
+        self.isrc: str = isrc
+        self.title: str = title
+        self.artist: str = artist
+        self.duration: str = duration
+        self.img: str = image
+        self.next: Optional[Song] = following
 
 
 class Node:
-    def __init__(self, song: CHANSON, visited: bool = False):
-        self.song = song
-        self.visited = visited
+    def __init__(self, song: Song, visited: bool = False) -> None:
+        self.song: Song = song
+        self.visited: bool = visited
 
 
-class Graph:
-    def __init__(self):
-        self.node_list = []
-        self.matrix = []
+Content = TypeVar("Content")  # Generic type
 
-    def set_bi_edge(self, idx_1: int, idx_2: int, value: int = 1):
+
+class Graph(Generic[Content]):
+    def __init__(self) -> None:
+        self.node_list: list[Content] = []  # ListeSommets
+        self.matrix: list[list[float]] = []  # mat
+
+    def set_bi_edge(self, idx_1: int, idx_2: int, value: float = 1) -> None:
         self.matrix[idx_1][idx_2] = value
         self.matrix[idx_2][idx_1] = value
 
-    def set_edge(self, idx_1: int, idx_2: int, value: int = 1):
+    def set_edge(self, idx_1: int, idx_2: int, value: float = 1) -> None:
         self.matrix[idx_1][idx_2] = value
 
-    def add_node(self, node) -> int:
+    def add_node(self, node: Content) -> int:
         self.node_list.append(node)
 
         for i in range(len(self.matrix)):
             self.matrix[i].append(0)
 
-        self.matrix.append([0] * len(self.node_list))
+        self.matrix.append([0.0] * len(self.node_list))
 
-        # Returns the node's index
+        # Returns the node index
         return len(self.node_list) - 1
 
-    def get_index_node(self, node) -> int:
-        return self.node_list.index(node)
+    def get_node_index(self, node: Content) -> int:
+        try:
+            return self.node_list.index(node)
+        except ValueError:
+            return -1
+
+    def is_valid_index(self, idx: int) -> bool:
+        return 0 <= idx < len(self.node_list)
+
+    def get_node(self, idx: int) -> Content | None:
+        if self.is_valid_index(idx):
+            return self.node_list[idx]
+
+        return None
+
+    def get_edges(
+        self, idx: int, value_range: Optional[tuple[float, float]] = None
+    ) -> dict[int, float] | None:
+        result = {}
+
+        if not self.is_valid_index(idx):
+            return None
+
+        edges = self.matrix[idx]
+        for i, value in enumerate(edges):
+            if value_range is None or (value_range[0] <= value <= value_range[1]):
+                result[i] = value
+
+        return result
 
 
 class Playlist:
-    def __init__(self):
-        self.tete = None
+    def __init__(self) -> None:
+        self.head: Song | None = None
 
-    def est_vide(self) -> bool:
-        return self.tete is None
+    def is_empty(self) -> bool:
+        return self.head is None
 
-    def insere(self, previous_song, new_song) -> None:
+    def insert(self, previous_song: Song, new_song: Song) -> None:
         """insère une nouvelle chanson juste après previous_song"""
+
         # cas où previous_song est en tête
-
-        if self.tete is None:
-
+        if self.head is None:
             tmp = new_song
-            tmp.next = self.tete
-            self.tete = tmp
+            tmp.next = self.head
+            self.head = tmp
         # cas général
         else:
-            chansoncourante = self.tete
-            while (
-                chansoncourante.next is not None
-                and chansoncourante.next is not previous_song
-            ):
-                chansoncourante = chansoncourante.next
-            tmp = new_song
-            tmp.next = chansoncourante.next
-            chansoncourante.next = tmp
+            current = self.head
+            while current.next is not None and current is not previous_song:
+                current = current.next
 
-    def taille(self) -> int:
-        if self.tete == None:
+            tmp = new_song
+            tmp.next = current.next
+            current.next = tmp
+
+    def append(self, song: Song) -> None:
+        if self.head is None:
+            self.head = song
+        else:
+            current = self.head
+            while current.next is not None:
+                current = current.next
+
+            print(current.artist, song.artist)
+            current.next = song
+
+    def __len__(self) -> int:
+        if self.head == None:
             return 0
         else:
             t = 1
-            chansoncourante = self.tete
-            while chansoncourante.next is not None:
-                t = t + 1
-                chansoncourante = chansoncourante.next
+            current = self.head
+            while current.next is not None:
+                t += 1
+                current = current.next
             return t
 
-    def plus_long_texte(self):
-        chansoncourante = self.tete
-        plt = max(len(chansoncourante.titre), len(chansoncourante.artiste))
+    def __repr__(self) -> str:
+        result = "╒════════════╕\n"
+        result += "│  Playlist  │\n"
+        result += "╞════════════╛\n"
 
-        while chansoncourante is not None:
+        current = self.head
+        if current is None:
+            result += f"└ \x1b[1;31mEmpty\x1b[0;0m"
+        else:
+            while current.next is not None:
+                result += f"├ * {current.title}\n"
+                current = current.next
 
-            tmp = max(len(chansoncourante.titre), len(chansoncourante.artiste))
-            if tmp > plt:
-                plt = tmp
-            chansoncourante = chansoncourante.next
+            result += f"└ * {current.title}"
 
-        return plt
-
-    # fonction de test
-    def lit_tout(self):
-        chansoncourante = self.tete
-        while chansoncourante is not None:
-            print(chansoncourante.titre)
-            chansoncourante = chansoncourante.next
-
-    ####################################""
+        return result
 
 
-class pile:
+class Pile:
     def __init__(self):
         self.contenu = []
 
@@ -114,34 +158,8 @@ class pile:
         self.contenu.append(v)
 
     def depiler(self):
-        """retourne l'élément en heut de pile si celle-ci n'est pas vide"""
         if not self.est_vide():
             return self.contenu.pop()
 
         else:
             raise Exception("saisie incorrecte")
-
-
-###################################
-
-
-if __name__ == "__main__":
-
-    song1 = CHANSON(
-        "FRZ019102280", "Volutes", "Alain Bashung", "3:25", "images/FRZ019102280.gif"
-    )
-    song2 = CHANSON(
-        "GBCJN7800001", "Miss You", "Rolling Stones", "4:49", "images/GBCJN7800001.gif"
-    )
-    # song3=CHANSON("USQX90900760","Castles Made of Sand","Jimi Hendrix","2:47","images/USQX90900760.gif")
-    # song4=CHANSON("USUM71021486","Take The Long Way Home","Supertramp","5:19","images/USUM71021486.gif")
-
-    ########## instanciation ############
-
-    maPL = Playlist()
-    maPL.insere(None, song1)
-    maPL.insere(None, song2)
-    # maPL.insere(None,song4)
-    # maPL.insere(song4,song3)
-
-    maPL.lit_tout()
