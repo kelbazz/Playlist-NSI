@@ -14,10 +14,10 @@ result = cursor.fetchall()
 for lign in result:
     new_song = CHANSON(
     isrc=lign[0],
-    title=[1],
-    artist=[2],
-    time=[3],
-    im=[4]
+    title=lign[1],
+    artist=lign[2],
+    time=lign[3],
+    im=lign[4]
     )
     new_node = Node(new_song, False)
     music_graph.add_node(new_node)
