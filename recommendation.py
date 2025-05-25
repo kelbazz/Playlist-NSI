@@ -2,6 +2,7 @@ import sqlite3
 import leo
 from classes import *
 
+music_graph = Graph()
 conn = sqlite3.connect('chansons.db')
 cursor = conn.cursor()
 
@@ -19,6 +20,7 @@ for lign in result:
     im=[4]
     )
     new_node = Node(new_song, False)
+    music_graph.add_node(new_node)
     
 
 first_song = leo.chanson_depart

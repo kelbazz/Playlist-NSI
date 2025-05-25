@@ -38,7 +38,7 @@ class Graph:
         return len(self.node_list) - 1
 
     def get_index_node(self, node) -> int:
-        return self.node_list.index(song)
+        return self.node_list.index(node)
 
 
 class Playlist:
